@@ -21,6 +21,8 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: res.data });
       get().connectSocket();
     } catch (error) {
+      console.error("CheckAuth error:", error);
+  console.error("Full response:", error.response);
       console.log("Error in checkAuth:", error);
       set({ authUser: null });
     } finally {
@@ -32,16 +34,18 @@ export const useAuthStore = create((set, get) => ({
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/auth/signup", data);
-      set({ authUser: res.data });
-      toast.success("Account created successfully");
-      get().connectSocket();
+      toast.success("Account created! Please verify your email.");
+  
+      // Don't set authUser or connect socket yet
+      // Redirect to verify email page instead
+      window.location.href = "/verify-email-page"; // or use a navigate() function if in a React component
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error?.response?.data?.message || "Signup failed");
     } finally {
       set({ isSigningUp: false });
     }
   },
-
+  
   login: async (data) => {
     set({ isLoggingIn: true });
     try {
